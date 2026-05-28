@@ -15,7 +15,7 @@ function draw_scatterplot(data) {
     // Main title
     g.append("text")
         .attr("x", chart_width / 2)
-        .attr("y", -45)
+        .attr("y", -50)
         .attr("text-anchor", "middle")
         .attr("font-size", "20px")
         .attr("font-weight", "bold")
@@ -24,28 +24,22 @@ function draw_scatterplot(data) {
     // Subtitle
     g.append("text")
         .attr("x", chart_width / 2)
-        .attr("y", -20)
+        .attr("y", -25)
         .attr("text-anchor", "middle")
         .attr("font-size", "16px")
-        .text("Credit score vs debt-to-income ratio, colored by purchase amount");
+        .text("Credit score vs. Debt-to-Income Ratio, colored by purchase tier");
 
-    // Convert each purchase amount into a categorical variable 
-    // Will use these colors to represent the categories and price ranges of spending amounts
-    function purchaseRange(amount) {
-        if (amount < 100) {
-            return "Under $100";
-        } else if (amount < 500) {
-            return "$100-$500";
-        } else if (amount < 1000) {
-            return "$500-$1000";
-        } else {
-            return "$1000+";
-        }
-    }
+    // Purchase tier order must match the preprocessing labels in main.js
+    const purchase_tiers = [
+        "Low (< $1K)",
+        "Medium ($1K – $2.5K)",
+        "High ($2.5K – $4K)",
+        "Very High (> $4K)"
+    ];
 
     // d3 function to scale the colors for the purchase amounts 
     const color = d3.scaleOrdinal()
-        .domain(["Under $100", "$100-$500", "$500-$1000", "$1000+"])
+        .domain(purchase_tiers)
         .range(["#d4eeff", "#74a9cf", "#2b8cbe", "#045a8d"]);
 
     // d3 function to scale the axes 
@@ -84,7 +78,7 @@ function draw_scatterplot(data) {
         })
         .attr("r", 2)
         .attr("fill", function(d) {
-            return color(purchaseRange(d.purchase_amount));
+            return color(d.purchase_tier);
         })
         .attr("opacity", 0.45);
 
@@ -108,22 +102,20 @@ function draw_scatterplot(data) {
     const legend = g.append("g")
         .attr("transform", `translate(${chart_width - 130}, 15)`);
 
-    const categories = ["Under $100", "$100-$500", "$500-$1000", "$1000+"];
-
     // Title of the legend
     legend.append("text")
-        .attr("x", 0)
-        .attr("y", -10)
+        .attr("x", -25)
+        .attr("y", -15 )
         .attr("font-size", "14px")
         .attr("font-weight", "bold")
-        .text("Purchase Amount");
+        .text("Purchase Tier (Amounts)");
 
     legend.selectAll(".legend-circle")
-        .data(categories)
+        .data(purchase_tiers)
         .enter()
         .append("circle")
         .attr("class", "legend-circle")
-        .attr("cx", 0)
+        .attr("cx", -20)
         .attr("cy", function(d, i) {
             return i * 22;
         })
@@ -133,7 +125,7 @@ function draw_scatterplot(data) {
         });
 
     legend.selectAll(".legend-label")
-        .data(categories)
+        .data(purchase_tiers)
         .enter()
         .append("text")
         .attr("class", "legend-label")
