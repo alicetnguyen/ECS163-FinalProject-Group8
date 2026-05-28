@@ -6,7 +6,7 @@ function draw_scatterplot(data) {
     const margin = {top: 120, right: 40, bottom: 70, left: 70};
 
     const chart_width = width / 2 - margin.left - margin.right;
-    const chart_height = 300;
+    const chart_height = 200;
 
     // Create a group element for the scatterplot and place in the top right quadrant
     const g = svg.append("g")
@@ -99,26 +99,28 @@ function draw_scatterplot(data) {
         .text("Debt-to-Income Ratio");
 
     // Create a legend for the color categories of the points 
+    // Horizontal legend below the scatterplot
     const legend = g.append("g")
-        .attr("transform", `translate(${chart_width - 130}, 15)`);
+        .attr(
+            "transform",
+            `translate(${chart_width / 2 - 325}, ${chart_height + 85})`
+        );
 
-    // Title of the legend
     legend.append("text")
-        .attr("x", -25)
-        .attr("y", -15 )
-        .attr("font-size", "14px")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("font-size", "13px")
         .attr("font-weight", "bold")
-        .text("Purchase Tier (Amounts)");
+        .text("Purchase Tier:");
 
     legend.selectAll(".legend-circle")
         .data(purchase_tiers)
         .enter()
         .append("circle")
-        .attr("class", "legend-circle")
-        .attr("cx", -20)
-        .attr("cy", function(d, i) {
-            return i * 22;
+        .attr("cx", function(d, i) {
+            return 110 + i * 140;
         })
+        .attr("cy", -4)
         .attr("r", 5)
         .attr("fill", function(d) {
             return color(d);
@@ -128,11 +130,10 @@ function draw_scatterplot(data) {
         .data(purchase_tiers)
         .enter()
         .append("text")
-        .attr("class", "legend-label")
-        .attr("x", 12)
-        .attr("y", function(d, i) {
-            return i * 22 + 4;
+        .attr("x", function(d, i) {
+            return 122 + i * 140;
         })
+        .attr("y", 0)
         .attr("font-size", "12px")
         .text(function(d) {
             return d;
