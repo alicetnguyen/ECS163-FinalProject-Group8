@@ -30,14 +30,32 @@ d3.csv("data/Buy_Now_Pay_Later_BNPL_CreditRisk_Dataset.csv").then(function(datas
         // Readable paid/unpaid label
         d.default_status = d.default_flag === 1 ? "Unpaid" : "Paid";
 
+        // Purchase amount tiers
         if (d.purchase_amount < 1000){
-            d.purchase_tier = "Low (<$1k)";
+            d.purchase_tier = "Low (< $1K)";
         } 
         else if (d.purchase_amount < 2500){  
-            d.purchase_tier = "Medium ($1k–$2.5k)";
+            d.purchase_tier = "Medium ($1K – $2.5K)";
         }
-        else if (d.purchase_amount < 4000)  d.purchase_tier = "High ($2.5k–$4k)";
-        else                                d.purchase_tier = "Very High (>$4k)";
+        else if (d.purchase_amount < 4000)  d.purchase_tier = "High ($2.5K – $4K)";
+        else                                d.purchase_tier = "Very High (> $4K)";
+
+        // Age groups
+        if (d.age < 25) {
+            d.age_group = "18-24";
+        }
+        else if (d.age < 35) {
+            d.age_group = "25-34";
+        }
+        else if (d.age < 45) {
+            d.age_group = "35-44";
+        }
+        else if (d.age < 55) {
+            d.age_group = "45-54";
+        }
+        else {
+            d.age_group = "55+";
+        }
     });
 
     // Draw the title of the dashboard
@@ -54,17 +72,17 @@ function draw_title() {
     // Main title
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", 25)
+        .attr("y", 35)
         .attr("text-anchor", "middle")
         .attr("font-size", "30px")
         .attr("font-weight", "bold")
-        .text("Buy Now Pay Later | Credit Risk Dashboard");
+        .text("Buy Now, Pay Later (BNPL) Credit Risk Dashboard");
 
     // Subtitle
     svg.append("text")
         .attr("x", width / 2)
-        .attr("y", 55)
+        .attr("y", 65)
         .attr("text-anchor", "middle")
         .attr("font-size", "20px")
-        .text("Exploring customer behavior and repayment risk");
+        .text("Exploring how demographic, financial, and purchasing behaviors relate to BNPL repayment risk");
 }
