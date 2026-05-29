@@ -1,4 +1,4 @@
-//  Flow: Purchase Amount Tier  -->  Employment Type -->  Default Status
+//  flow: Purchase Amount Tier  -->  Employment Type -->  Default Status
 function draw_sankey(dataset) {
     // set up sankey dimensions and width
     const sankeyWidth  = 740;   
