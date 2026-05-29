@@ -65,7 +65,7 @@ d3.csv("data/Buy_Now_Pay_Later_BNPL_CreditRisk_Dataset.csv").then(function(datas
     draw_heatmap(dataset);
     draw_scatterplot(dataset); 
     draw_sankey(dataset);
-    // draw_streamgraph(dataset);
+    draw_streamgraph(dataset);
 });
 
 function draw_title() {
