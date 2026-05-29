@@ -1,10 +1,10 @@
 //  flow: Purchase Amount Tier  -->  Employment Type -->  Default Status
 function draw_sankey(dataset) {
     // set up sankey dimensions and width
-    const sankeyWidth  = 740;   
-    const sankeyHeight = 380;   
-    const sankeyX      = 27;   
-    const sankeyY      = 130;  
+    const sankeyWidth  = 700;   
+    const sankeyHeight = 340;   
+    const sankeyX      = 57;   
+    const sankeyY      = 530; 
 
     // moves graph to the correct place
     const g = svg.append("g")
@@ -13,16 +13,16 @@ function draw_sankey(dataset) {
     // label panel
     g.append("text")
         .attr("x", sankeyWidth / 2)
-        .attr("y", -10)
+        .attr("y", -18)
         .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
+        .attr("font-size", "20px")
         .attr("font-weight", "bold")
         .text("Relationships between Purchase Tier, Employment Type, Default Status");
 
     
     // ordered lists so nodes always render top-to-bottom
     const tierOrder = [
-        "Low (<$1k)", "Medium ($1k–$2.5k)", "High ($2.5k–$4k)", "Very High (>$4k)"
+        "Low (< $1K)", "Medium ($1K – $2.5K)", "High ($2.5K – $4K)", "Very High (> $4K)"
     ];
     const empOrder = [...new Set(dataset.map(d => d.employment_type))].sort();
     const statusOrder = ["Paid", "Unpaid"];
