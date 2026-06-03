@@ -148,6 +148,22 @@ function redraw(data) {
     draw_streamgraph(data, document.getElementById("svg-stream"));
 }
 
+// Called by the scatterplot brush to update the other three charts with a filtered subset.
+function applyBrushFilter(brushedData) {
+    if (brushedData === null) {
+        const filtered = activeRiskFilter === "All"
+            ? fullDataset
+            : fullDataset.filter(d => d.customer_segment === activeRiskFilter);
+        draw_heatmap(filtered, document.getElementById("svg-heatmap"));
+        draw_sankey(filtered, document.getElementById("svg-sankey"));
+        draw_streamgraph(filtered, document.getElementById("svg-stream"));
+    } else {
+        draw_heatmap(brushedData, document.getElementById("svg-heatmap"));
+        draw_sankey(brushedData, document.getElementById("svg-sankey"));
+        draw_streamgraph(brushedData, document.getElementById("svg-stream"));
+    }
+}
+
 // Animated redraw used when switching filters
 function animatedRedraw(data) {
 

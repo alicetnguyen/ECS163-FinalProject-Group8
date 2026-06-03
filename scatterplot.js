@@ -14,10 +14,10 @@ function draw_scatterplot(data, svgEl) {
     svg.selectAll("*").remove();
 
     // Set up margins and dimensions
-    const margin = {top: 46, right: 16, bottom: 56, left: 48};
+    const margin = { top: 46, right: 16, bottom: 56, left: 48 };
 
-    const chart_width  = W - margin.left - margin.right;
-    const chart_height = H - margin.top  - margin.bottom;
+    const chart_width = W - margin.left - margin.right;
+    const chart_height = H - margin.top - margin.bottom;
 
     // Create a group element for the scatterplot
     const g = svg.append("g")
@@ -58,14 +58,14 @@ function draw_scatterplot(data, svgEl) {
 
     // d3 function to scale the axes
     const x = d3.scaleLinear()
-        .domain(d3.extent(data, function(d) {
+        .domain(d3.extent(data, function (d) {
             return d.credit_score;
         }))
         .range([0, chart_width])
         .nice();
 
     const y = d3.scaleLinear()
-        .domain(d3.extent(data, function(d) {
+        .domain(d3.extent(data, function (d) {
             return d.debt_to_income_ratio;
         }))
         .range([chart_height, 0])
@@ -75,47 +75,47 @@ function draw_scatterplot(data, svgEl) {
     g.append("g")
         .attr("transform", `translate(0, ${chart_height})`)
         .call(d3.axisBottom(x).ticks(5).tickSize(0))
-        .call(function(axis) {
+        .call(function (axis) {
             axis.select(".domain").attr("stroke", "#e8eaee");
         })
         .selectAll("text")
         .attr("font-size", "10px")
         .attr("fill", "#9aa0b0");
-    
+
     // add horizontal grid lines for better readability, using the same ticks as the y-axis
     g.append("g")
         .call(d3.axisLeft(y).ticks(4).tickSize(0))
-        .call(function(axis) {
+        .call(function (axis) {
             axis.select(".domain").attr("stroke", "#e8eaee");
         })
         .selectAll("text")
         .attr("font-size", "10px")
         .attr("fill", "#9aa0b0");
-    
+
     // Create the points for each customer, initially positioned at the bottom with 0 radius and opacity for animation
     const points = g.selectAll(".scatter-point")
         .data(data)
         .enter()
         .append("circle")
         .attr("class", "scatter-point")
-        .attr("cx", function(d) {
+        .attr("cx", function (d) {
             return x(d.credit_score);
         })
         .attr("cy", chart_height / 2)
         .attr("r", 0)
-        .attr("fill", function(d) {
+        .attr("fill", function (d) {
             return color(d.purchase_tier);
         })
         .attr("opacity", 0);
 
     // Points drop in from the centre with a random staggered delay
     points.transition()
-        .delay(function() {
+        .delay(function () {
             return Math.random() * 320;
         })
         .duration(450)
         .ease(d3.easeCubicOut)
-        .attr("cy", function(d) {
+        .attr("cy", function (d) {
             return y(d.debt_to_income_ratio);
         })
         .attr("r", 2)
@@ -123,7 +123,7 @@ function draw_scatterplot(data, svgEl) {
 
     // Add hover behavior to the points to show more details about each customer in the tooltip
     points
-        .on("mouseover", function(event, d) {
+        .on("mouseover", function (event, d) {
 
             d3.select(this).raise().attr("r", 5).attr("opacity", 1);
 
@@ -135,7 +135,7 @@ function draw_scatterplot(data, svgEl) {
             );
         })
         .on("mousemove", moveTooltip)
-        .on("mouseout", function() {
+        .on("mouseout", function () {
 
             d3.select(this).attr("r", 2).attr("opacity", 0.45);
 
@@ -170,9 +170,9 @@ function draw_scatterplot(data, svgEl) {
         );
 
     const col_width = chart_width / 2;
-    
+
     // Loop through the purchase tiers and add a colored dot and label for each tier in the legend
-    purchase_tiers.forEach(function(tier, i) {
+    purchase_tiers.forEach(function (tier, i) {
 
         const col = i % 2;
         const row = Math.floor(i / 2);
@@ -195,4 +195,53 @@ function draw_scatterplot(data, svgEl) {
             .attr("fill", "#5a6070")
             .text(tier);
     });
+
+    // Function to move the tooltip position based on mouse movement, with boundaries to prevent it from going off-screen
+    const brush = d3.brush()
+        .extent([[0, 0], [chart_width, chart_height]])
+        .on("brush", function (event) {
+
+            const sel = event.selection;
+            if (!sel) return;
+
+            // sel gives the pixel coordinates of the brush rectangle as [(x0, y0), (x1, y1)]
+            const [[x0, y0], [x1, y1]] = sel;
+
+            // Filter the data to find which points are within the brushed area
+            const brushed = data.filter(function (d) {
+                return x(d.credit_score) >= x0 && x(d.credit_score) <= x1
+                    && y(d.debt_to_income_ratio) >= y0 && y(d.debt_to_income_ratio) <= y1;
+            });
+
+            // Highlight brushed points and fade out others
+            points
+                .attr("r", function (d) {
+                    return x(d.credit_score) >= x0 && x(d.credit_score) <= x1
+                        && y(d.debt_to_income_ratio) >= y0 && y(d.debt_to_income_ratio) <= y1
+                        ? 2 : 1.5;
+                })
+                .attr("opacity", function (d) {
+                    return x(d.credit_score) >= x0 && x(d.credit_score) <= x1
+                        && y(d.debt_to_income_ratio) >= y0 && y(d.debt_to_income_ratio) <= y1
+                        ? 1 : 0.08;
+                });
+
+            applyBrushFilter(brushed);
+        })
+        // when user clears (clicks on empty space), restore all points and tell other charts to go back to full dataset
+        .on("end", function (event) {
+            if (!event.selection) {
+                points.attr("r", 2).attr("opacity", 0.45);
+                applyBrushFilter(null);
+            }
+        });
+
+    // attach the brush to the chart and style the selection rectangle
+    g.append("g").call(brush)
+        .select(".selection")
+        .attr("fill", "#2b8cbe")
+        .attr("fill-opacity", 0.08)
+        .attr("stroke", "#2b8cbe")
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", "4 3");
 }
