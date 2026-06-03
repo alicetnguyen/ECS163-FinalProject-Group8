@@ -1,23 +1,56 @@
 <!doctype html>
-<html style="width:100%;height:100%;">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Buy Now Pay Later | Credit Risk Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BNPL Credit Risk Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
+<body>
 
-<body style="width:100%;height:100%; margin:0;">
-    <svg width="100%" height="100%"></svg>
+  <header id="header">
+    <div id="header-left">
+      <span class="header-title">BNPL Credit Risk Dashboard</span>
+      <span id="record-count"></span>
+    </div>
+    <div id="header-right">
+      <div id="filter-group">
+        <button class="filter-pill active" data-val="All">All</button>
+        <div class="filter-sep"></div>
+        <button class="filter-pill" data-val="High Risk">High risk</button>
+        <button class="filter-pill" data-val="Medium Risk">Medium risk</button>
+        <button class="filter-pill" data-val="Low Risk">Low risk</button>
+      </div>
+    </div>
+  </header>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>=
+  <main id="dashboard">
+    <div id="col-left">
+      <div class="chart-card" id="card-heatmap">
+        <svg id="svg-heatmap"></svg>
+      </div>
+      <div class="chart-card" id="card-scatter">
+        <svg id="svg-scatter"></svg>
+      </div>
+    </div>
+    <div id="col-right">
+      <div class="chart-card" id="card-sankey">
+        <svg id="svg-sankey"></svg>
+      </div>
+      <div class="chart-card" id="card-stream">
+        <svg id="svg-stream"></svg>
+      </div>
+    </div>
+  </main>
 
-    <!-- Visualization -->
-    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
-    <script src="heatmap.js"></script>
-    <script src="scatterplot.js"></script>
-    <script src="sankey.js"></script>
-    <script src="stream.js"></script>
+  <div class="dashboard-tooltip" id="tooltip"></div>
 
-    <!-- Main -->
-    <script src="main.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+  <script src="heatmap.js?v=12"></script>
+  <script src="scatterplot.js?v=12"></script>
+  <script src="sankey.js?v=12"></script>
+  <script src="stream.js?v=12"></script>
+  <script src="main.js?v=12"></script>
 </body>
 </html>

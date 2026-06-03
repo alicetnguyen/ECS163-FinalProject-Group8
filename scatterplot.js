@@ -1,32 +1,46 @@
 // Function to draw the scatterplot visualization
 // Purpose is to show the relationship between credit score and debt to income ratios where each point represents one customer
-function draw_scatterplot(data) {
+function draw_scatterplot(data, svgEl) {
+
+    // Read dimensions from the card container instead of global width/height
+    const container = svgEl.parentElement;
+    const W = container.clientWidth;
+    const H = container.clientHeight;
+
+    // Select this chart's own SVG (not a global svg) and clear it before redrawing
+    const svg = d3.select(svgEl)
+        .attr("viewBox", `0 0 ${W} ${H}`);
+
+    svg.selectAll("*").remove();
 
     // Set up margins and dimensions
-    const margin = {top: 120, right: 40, bottom: 70, left: 70};
+    const margin = {top: 46, right: 16, bottom: 56, left: 48};
 
-    const chart_width = width / 2 - margin.left - margin.right;
-    const chart_height = 200;
+    const chart_width  = W - margin.left - margin.right;
+    const chart_height = H - margin.top  - margin.bottom;
 
-    // Create a group element for the scatterplot and place in the top right quadrant
+    // Create a group element for the scatterplot
     const g = svg.append("g")
-        .attr("transform", `translate(${width / 2 + margin.left}, ${margin.top + 55})`);
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     // Main title
     g.append("text")
         .attr("x", chart_width / 2)
-        .attr("y", -50)
+        .attr("y", -22)
         .attr("text-anchor", "middle")
-        .attr("font-size", "20px")
-        .attr("font-weight", "bold")
+        .attr("font-family", "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif")
+        .attr("font-size", "13px")
+        .attr("font-weight", "500")
+        .attr("fill", "#1a1e2e")
         .text("Who tends to make the largest BNPL purchases?");
 
     // Subtitle
     g.append("text")
         .attr("x", chart_width / 2)
-        .attr("y", -25)
+        .attr("y", -8)
         .attr("text-anchor", "middle")
-        .attr("font-size", "16px")
+        .attr("font-size", "10px")
+        .attr("fill", "#9aa0b0")
         .text("Credit score vs. Debt-to-Income Ratio, colored by purchase tier");
 
     // Purchase tier order must match the preprocessing labels in main.js
@@ -37,12 +51,12 @@ function draw_scatterplot(data) {
         "Very High (> $4K)"
     ];
 
-    // d3 function to scale the colors for the purchase amounts 
+    // d3 function to scale the colors for the purchase amounts
     const color = d3.scaleOrdinal()
         .domain(purchase_tiers)
         .range(["#d4eeff", "#74a9cf", "#2b8cbe", "#045a8d"]);
 
-    // d3 function to scale the axes 
+    // d3 function to scale the axes
     const x = d3.scaleLinear()
         .domain(d3.extent(data, function(d) {
             return d.credit_score;
@@ -60,12 +74,26 @@ function draw_scatterplot(data) {
     // Draw axes and points for each BNPL transaction/customer
     g.append("g")
         .attr("transform", `translate(0, ${chart_height})`)
-        .call(d3.axisBottom(x));
-
+        .call(d3.axisBottom(x).ticks(5).tickSize(0))
+        .call(function(axis) {
+            axis.select(".domain").attr("stroke", "#e8eaee");
+        })
+        .selectAll("text")
+        .attr("font-size", "10px")
+        .attr("fill", "#9aa0b0");
+    
+    // add horizontal grid lines for better readability, using the same ticks as the y-axis
     g.append("g")
-        .call(d3.axisLeft(y));
-
-    g.selectAll(".scatter-point")
+        .call(d3.axisLeft(y).ticks(4).tickSize(0))
+        .call(function(axis) {
+            axis.select(".domain").attr("stroke", "#e8eaee");
+        })
+        .selectAll("text")
+        .attr("font-size", "10px")
+        .attr("fill", "#9aa0b0");
+    
+    // Create the points for each customer, initially positioned at the bottom with 0 radius and opacity for animation
+    const points = g.selectAll(".scatter-point")
         .data(data)
         .enter()
         .append("circle")
@@ -73,69 +101,98 @@ function draw_scatterplot(data) {
         .attr("cx", function(d) {
             return x(d.credit_score);
         })
+        .attr("cy", chart_height / 2)
+        .attr("r", 0)
+        .attr("fill", function(d) {
+            return color(d.purchase_tier);
+        })
+        .attr("opacity", 0);
+
+    // Points drop in from the centre with a random staggered delay
+    points.transition()
+        .delay(function() {
+            return Math.random() * 320;
+        })
+        .duration(450)
+        .ease(d3.easeCubicOut)
         .attr("cy", function(d) {
             return y(d.debt_to_income_ratio);
         })
         .attr("r", 2)
-        .attr("fill", function(d) {
-            return color(d.purchase_tier);
-        })
         .attr("opacity", 0.45);
+
+    // Add hover behavior to the points to show more details about each customer in the tooltip
+    points
+        .on("mouseover", function(event, d) {
+
+            d3.select(this).raise().attr("r", 5).attr("opacity", 1);
+
+            showTooltip(event,
+                `<strong>${d.purchase_tier}</strong><br>` +
+                `Credit Score: ${d.credit_score}<br>` +
+                `Debt-to-Income: ${d.debt_to_income_ratio.toFixed(2)}<br>` +
+                `Purchase: $${Math.round(d.purchase_amount).toLocaleString()}`
+            );
+        })
+        .on("mousemove", moveTooltip)
+        .on("mouseout", function() {
+
+            d3.select(this).attr("r", 2).attr("opacity", 0.45);
+
+            hideTooltip();
+        });
 
     // Add labels for the axes
     g.append("text")
         .attr("x", chart_width / 2)
-        .attr("y", chart_height + 50)
+        .attr("y", chart_height + 36)
         .attr("text-anchor", "middle")
-        .attr("font-size", "15px")
+        .attr("font-size", "11px")
+        .attr("fill", "#9aa0b0")
         .text("Credit Score");
 
+    // Y-axis label is rotated -90 degrees and positioned to the left of the axis
     g.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -chart_height / 2)
-        .attr("y", -50)
+        .attr("y", -36)
         .attr("text-anchor", "middle")
-        .attr("font-size", "15px")
+        .attr("font-size", "11px")
+        .attr("fill", "#9aa0b0")
         .text("Debt-to-Income Ratio");
 
-    // Create a legend for the color categories of the points 
-    // Horizontal legend below the scatterplot
+    // Create a legend for the color categories of the points
+    // Two-row legend so it fits within the card width
     const legend = g.append("g")
         .attr(
             "transform",
-            `translate(${chart_width / 2 - 325}, ${chart_height + 85})`
+            `translate(0, ${chart_height + 42})`
         );
 
-    legend.append("text")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("font-size", "13px")
-        .attr("font-weight", "bold")
-        .text("Purchase Tier:");
+    const col_width = chart_width / 2;
+    
+    // Loop through the purchase tiers and add a colored dot and label for each tier in the legend
+    purchase_tiers.forEach(function(tier, i) {
 
-    legend.selectAll(".legend-circle")
-        .data(purchase_tiers)
-        .enter()
-        .append("circle")
-        .attr("cx", function(d, i) {
-            return 110 + i * 140;
-        })
-        .attr("cy", -4)
-        .attr("r", 5)
-        .attr("fill", function(d) {
-            return color(d);
-        });
+        const col = i % 2;
+        const row = Math.floor(i / 2);
 
-    legend.selectAll(".legend-label")
-        .data(purchase_tiers)
-        .enter()
-        .append("text")
-        .attr("x", function(d, i) {
-            return 122 + i * 140;
-        })
-        .attr("y", 0)
-        .attr("font-size", "12px")
-        .text(function(d) {
-            return d;
-        });
+        const lx = col * col_width;
+        const ly = row * 16;
+
+        // Add a colored dot for this purchase tier
+        legend.append("circle")
+            .attr("cx", lx + 5)
+            .attr("cy", ly + 4)
+            .attr("r", 5)
+            .attr("fill", color(tier));
+
+        // Add a label for this purchase tier
+        legend.append("text")
+            .attr("x", lx + 15)
+            .attr("y", ly + 8)
+            .attr("font-size", "10px")
+            .attr("fill", "#5a6070")
+            .text(tier);
+    });
 }
