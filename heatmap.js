@@ -192,7 +192,6 @@ function draw_heatmap(data, svgEl) {
 
         const tooltipHtml = `
             <strong>${d.age_group} &mdash; ${d.category}</strong><br>
-            Avg purchase <strong>$${Math.round(d.average_purchase).toLocaleString()}</strong><br>
             Default rate <strong>${d.default_rate.toFixed(1)}%</strong><br>
             Avg credit <strong>${Math.round(d.avg_credit_score)}</strong><br>
             Transactions <strong>${d.count.toLocaleString()}</strong>
