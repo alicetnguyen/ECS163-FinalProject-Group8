@@ -32,7 +32,7 @@ function draw_heatmap(data, svgEl) {
         .attr("font-size", "13px")
         .attr("font-weight", "500")
         .attr("fill", "#1a1e2e")
-        .text("What are different age groups buying?");
+        .text("How are different age groups using BNPL?");
 
     // Age group order should match preprocessing in main.js
     const age_groups = [

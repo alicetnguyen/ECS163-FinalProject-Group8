@@ -52,6 +52,7 @@ function draw_sankey(dataset, svgEl) {
         ...empOrder,
         ...statusOrder
     ];
+
     const nodeIndex = {};
     nodeNames.forEach((name, i) => { nodeIndex[name] = i; });
 
