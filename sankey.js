@@ -98,29 +98,18 @@ function draw_sankey(dataset, svgEl) {
         links: links.map(d => Object.assign({}, d))
     });
 
-    // defines color scales
-    // Reference: https://d3js.org/d3-scale/ordinal
-    const tierColours = d3.scaleOrdinal()
-        .domain(tierOrder)
-        .range(["#4e79a7", "#59a14f", "#f28e2b", "#e15759"]);
+    // same red/yellow/green palette as in the other graphs
+    const repeatedPalette = [];
+    // Repeat the small palette enough times to cover node names
+    while (repeatedPalette.length < nodeNames.length) {
+        repeatedPalette.push(...window.palette);
+    }
+    const nodeColourScale = d3.scaleOrdinal()
+        .domain(nodeNames)
+        .range(repeatedPalette.slice(0, nodeNames.length));
 
-    // employment type colors
-    const empColours = d3.scaleOrdinal()
-        .domain(empOrder)
-        .range(d3.schemeTableau10);
-
-    // default status colors
-    const statusColours = d3.scaleOrdinal()
-        .domain(statusOrder)
-        .range(["#76b7b2", "#e15759"]);
-
-    // color nodes according to which variables or categories they are associated with
     function nodeColor(name) {
-        if (tierOrder.includes(name))
-            return tierColours(name);
-        if (statusOrder.includes(name))
-            return statusColours(name);
-        return empColours(name);
+        return nodeColourScale(name);
     }
 
     // create links between the paths

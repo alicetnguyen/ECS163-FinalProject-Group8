@@ -33,14 +33,10 @@ function draw_streamgraph(data, svgEl) {
         "Low Risk"
     ];
 
-    // Color scale for each risk category
+    // Color scale for each risk category using the shared palette (High->red, Medium->yellow, Low->green)
     const color = d3.scaleOrdinal()
         .domain(categories)
-        .range([
-            "#045a8d",
-            "#2b8cbe",
-            "#74a9cf"
-        ]);
+        .range([window.palette[2], window.palette[1], window.palette[0]]);
 
     // Credit score ranges used for binning customers
     const scoreRanges = [
@@ -98,26 +94,45 @@ function draw_streamgraph(data, svgEl) {
         .attr("fill", "#1a1e2e")
         .text("How does risk vary across credit scores?");
 
-    // Inline horizontal legend centered under the title
-    const legend_total_width = categories.length * 110;
-    const legend_start_x = width / 2 - legend_total_width / 2;
+    // Subtitle
+    g.append("text")
+        .attr("x", width / 2)
+        .attr("y", -8)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "10px")
+        .attr("fill", "#9aa0b0")
+        .text("Credit score vs. Debt-to-Income Ratio, colored by purchase tier");
+
+    // Legend placed bottom-right inside the chart
+    const legendWidth = 140;
+    const legendHeight = categories.length * 16 + 14;
+    const legendX = Math.max(0, width - legendWidth + 60);
+    const legendY = Math.max(0, height - legendHeight);
+    const legend = g.append("g").attr("class", "stream-legend").attr("transform", `translate(${legendX}, ${legendY})`);
+
+    // Legend title
+    legend.append("text")
+        .attr("x", -10)
+        .attr("y", -6)
+        .attr("font-size", "12px")
+        .attr("font-weight", 600)
+        .attr("fill", "#5a6070")
+        .text("Risk Score");
 
     categories.forEach(function (category, i) {
-
-        const lx = legend_start_x + i * 110;
-
-        g.append("rect")
-            .attr("x", lx)
-            .attr("y", -15)
+        const ly = i * 16;
+        legend.append("rect")
+            .attr("x", 0)
+            .attr("y", ly)
             .attr("width", 10)
             .attr("height", 10)
             .attr("rx", 2)
             .attr("fill", color(category))
             .attr("opacity", 0.85);
 
-        g.append("text")
-            .attr("x", lx + 14)
-            .attr("y", -6)
+        legend.append("text")
+            .attr("x", 14)
+            .attr("y", ly + 9)
             .attr("font-size", "11px")
             .attr("fill", "#5a6070")
             .text(category);
@@ -240,9 +255,9 @@ function draw_streamgraph(data, svgEl) {
             const pct_medium = d.total > 0 ? Math.round(d["Medium Risk"] / d.total * 100) : 0;
             const pct_low = d.total > 0 ? Math.round(d["Low Risk"] / d.total * 100) : 0;
 
-            const dot_high = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#045a8d;margin-right:5px;"></span>`;
-            const dot_medium = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#2b8cbe;margin-right:5px;"></span>`;
-            const dot_low = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:#74a9cf;margin-right:5px;"></span>`;
+            const dot_high = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${window.palette[2]};margin-right:5px;"></span>`;
+            const dot_medium = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${window.palette[1]};margin-right:5px;"></span>`;
+            const dot_low = `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${window.palette[0]};margin-right:5px;"></span>`;
 
             showTooltip(event,
                 `<strong>${d.range}</strong> credit score<br>` +

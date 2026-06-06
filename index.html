@@ -10,35 +10,55 @@
 
   <header id="header">
     <div id="header-left">
-      <span class="header-title">BNPL Credit Risk Dashboard</span>
-      <span id="record-count"></span>
+      <div id="header-title-row">
+        <span class="header-title">BNPL Credit Risk Dashboard</span>
+        <span id="record-count"></span>
+      </div>
+      <span class="header-subtitle">Start with the stream graph, then explore the heatmap and sankey, and finish with the scatter plot for detailed insight.</span>
     </div>
     <div id="header-right">
       <div id="filter-group">
-        <button class="filter-pill active" data-val="All">All</button>
-        <div class="filter-sep"></div>
-        <button class="filter-pill" data-val="High Risk">High risk</button>
-        <button class="filter-pill" data-val="Medium Risk">Medium risk</button>
-        <button class="filter-pill" data-val="Low Risk">Low risk</button>
+        <select id="select-risk" class="dem-filter">
+          <option value="All">All risks</option>
+          <option value="High Risk">High risk</option>
+          <option value="Medium Risk">Medium risk</option>
+          <option value="Low Risk">Low risk</option>
+        </select>
+      </div>
+      <div id="demographic-filters">
+        <select id="select-age" class="dem-filter">
+          <option value="All">All ages</option>
+        </select>
+        <select id="select-employment" class="dem-filter">
+          <option value="All">All employment</option>
+        </select>
+        <select id="select-location" class="dem-filter">
+          <option value="All">All locations</option>
+        </select>
+        <select id="select-product" class="dem-filter">
+          <option value="All">All categories</option>
+        </select>
+        <button id="reset-filters" class="filter-pill">Reset</button>
       </div>
     </div>
   </header>
 
   <main id="dashboard">
-    <div id="col-left">
+    <div id="top-row">
+      <div class="chart-card" id="card-stream">
+        <svg id="svg-stream"></svg>
+      </div>
       <div class="chart-card" id="card-heatmap">
         <svg id="svg-heatmap"></svg>
       </div>
-      <div class="chart-card" id="card-scatter">
-        <svg id="svg-scatter"></svg>
-      </div>
-    </div>
-    <div id="col-right">
       <div class="chart-card" id="card-sankey">
         <svg id="svg-sankey"></svg>
       </div>
-      <div class="chart-card" id="card-stream">
-        <svg id="svg-stream"></svg>
+    </div>
+
+    <div id="bottom-row">
+      <div class="chart-card" id="card-scatter">
+        <svg id="svg-scatter"></svg>
       </div>
     </div>
   </main>

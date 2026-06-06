@@ -34,6 +34,15 @@ function draw_heatmap(data, svgEl) {
         .attr("fill", "#1a1e2e")
         .text("How are different age groups using BNPL?");
 
+    // Subtitle (spaced slightly below the title for clarity)
+    g.append("text")
+        .attr("x", chart_width / 2)
+        .attr("y", -2)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "10px")
+        .attr("fill", "#9aa0b0")
+        .text("Average purchase amount by product category and age group");
+
     // Age group order should match preprocessing in main.js
     const age_groups = [
         "18-24",
@@ -109,17 +118,12 @@ function draw_heatmap(data, svgEl) {
         .range([0, chart_height])
         .padding(0.05);
 
-    // Use a blue color scale for average purchase amount
-    const color = d3.scaleLinear()
-        .domain([
-            d3.min(heatmap_data, function (d) {
-                return d.average_purchase;
-            }),
-            d3.max(heatmap_data, function (d) {
-                return d.average_purchase;
-            })
-        ])
-        .range(["#d4eeff", "#045a8d"]);
+    // avg purchase amt w red yellow green type of scale for low and high purchases
+    const minAvg = d3.min(heatmap_data, d => d.average_purchase);
+    const maxAvg = d3.max(heatmap_data, d => d.average_purchase);
+    const color = function(val) {
+        return window.getRiskColor(val, minAvg, maxAvg);
+    };
 
     // Draw x-axis
     g.append("g")
@@ -277,6 +281,15 @@ function draw_heatmap(data, svgEl) {
             `translate(${chart_width - legend_width}, ${chart_height + 50})`
         );
 
+    // Legend title
+    legend.append("text")
+        .attr("x", 0)
+        .attr("y", -10)
+        .attr("font-size", "11px")
+        .attr("font-weight", 600)
+        .attr("fill", "#5a6070")
+        .text("Average Purchase ($)");
+
     // Create the gradient definition to make it clear for user and easy to understand
     const defs = svg.append("defs");
 
@@ -289,11 +302,13 @@ function draw_heatmap(data, svgEl) {
 
     gradient.append("stop")
         .attr("offset", "0%")
-        .attr("stop-color", "#d4eeff");
-
+        .attr("stop-color", window.palette[0]);
+    gradient.append("stop")
+        .attr("offset", "50%")
+        .attr("stop-color", window.palette[1]);
     gradient.append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", "#045a8d");
+        .attr("stop-color", window.palette[2]);
 
     // Draw gradient bar
     legend.append("rect")
@@ -302,24 +317,20 @@ function draw_heatmap(data, svgEl) {
         .attr("rx", 3)
         .style("fill", "url(#hm-grad)");
 
-    // Show minimum value of average
+    // show min and max avg purchase amts
     legend.append("text")
         .attr("x", 0)
         .attr("y", legend_height + 13)
         .attr("font-size", "9px")
         .attr("fill", "#9aa0b0")
-        .text("$" + Math.round(d3.min(heatmap_data, function (d) {
-            return d.average_purchase;
-        })));
+        .text("$" + Math.round(minAvg));
 
-    // Show maximum value of average
+    // show max value of avg purchase
     legend.append("text")
         .attr("x", legend_width)
         .attr("y", legend_height + 13)
         .attr("text-anchor", "end")
         .attr("font-size", "9px")
         .attr("fill", "#9aa0b0")
-        .text("$" + Math.round(d3.max(heatmap_data, function (d) {
-            return d.average_purchase;
-        })));
+        .text("$" + Math.round(maxAvg));
 }

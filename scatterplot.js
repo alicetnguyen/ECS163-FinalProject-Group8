@@ -51,10 +51,17 @@ function draw_scatterplot(data, svgEl) {
         "Very High (> $4K)"
     ];
 
-    // d3 function to scale the colors for the purchase amounts
-    const color = d3.scaleOrdinal()
-        .domain(purchase_tiers)
-        .range(["#d4eeff", "#74a9cf", "#2b8cbe", "#045a8d"]);
+    // Map purchase tiers to a clear green → yellow → orange → red progression
+    const colorMap = {
+        "Low (< $1K)": "#2ecc71",
+        "Medium ($1K – $2.5K)": "#f1c40f",
+        "High ($2.5K – $4K)": "#f28e2b",
+        "Very High (> $4K)": "#e74c3c"
+    };
+
+    const color = function(tier) {
+        return colorMap[tier];
+    };
 
     // d3 function to scale the axes
     const x = d3.scaleLinear()
@@ -118,8 +125,8 @@ function draw_scatterplot(data, svgEl) {
         .attr("cy", function (d) {
             return y(d.debt_to_income_ratio);
         })
-        .attr("r", 2)
-        .attr("opacity", 0.45);
+        .attr("r", 2.5)
+        .attr("opacity", 0.6);
 
     // Add hover behavior to the points to show more details about each customer in the tooltip
     points
@@ -137,7 +144,7 @@ function draw_scatterplot(data, svgEl) {
         .on("mousemove", moveTooltip)
         .on("mouseout", function () {
 
-            d3.select(this).attr("r", 2).attr("opacity", 0.45);
+            d3.select(this).attr("r", 2.5).attr("opacity", 0.6);
 
             hideTooltip();
         });
@@ -161,37 +168,39 @@ function draw_scatterplot(data, svgEl) {
         .attr("fill", "#9aa0b0")
         .text("Debt-to-Income Ratio");
 
-    // Create a legend for the color categories of the points
-    // Two-row legend so it fits within the card width
+    // create legend for the color categories of the points
+    // legend so it fits within the card width
+    // top right like most legends
+    const legendWidth = 140;
+    // move slightly right and down to sit inside the card padding
+    const legendX = Math.max(0, chart_width - legendWidth) + 10;
+    const legendY = -7;
     const legend = g.append("g")
-        .attr(
-            "transform",
-            `translate(0, ${chart_height + 42})`
-        );
+        .attr("class", "scatter-legend")
+        .attr("transform", `translate(${legendX}, ${legendY})`);
 
-    const col_width = chart_width / 2;
+    // legend title
+    legend.append("text")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("font-size", "11px")
+        .attr("font-weight", 600)
+        .attr("fill", "#5a6070")
+        .text("Purchase Tier");
 
-    // Loop through the purchase tiers and add a colored dot and label for each tier in the legend
+    // vertical purchase tiers
     purchase_tiers.forEach(function (tier, i) {
-
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-
-        const lx = col * col_width;
-        const ly = row * 16;
-
-        // Add a colored dot for this purchase tier
+        const ly = 12 + i * 18; // start below title
         legend.append("circle")
-            .attr("cx", lx + 5)
-            .attr("cy", ly + 4)
+            .attr("cx", 0)
+            .attr("cy", ly + 6)
             .attr("r", 5)
             .attr("fill", color(tier));
 
-        // Add a label for this purchase tier
         legend.append("text")
-            .attr("x", lx + 15)
-            .attr("y", ly + 8)
-            .attr("font-size", "10px")
+            .attr("x", 12)
+            .attr("y", ly + 10)
+            .attr("font-size", "11px")
             .attr("fill", "#5a6070")
             .text(tier);
     });
@@ -231,7 +240,7 @@ function draw_scatterplot(data, svgEl) {
         // when user clears (clicks on empty space), restore all points and tell other charts to go back to full dataset
         .on("end", function (event) {
             if (!event.selection) {
-                points.attr("r", 2).attr("opacity", 0.45);
+                points.attr("r", 2.5).attr("opacity", 0.6);
                 applyBrushFilter(null);
             }
         });
