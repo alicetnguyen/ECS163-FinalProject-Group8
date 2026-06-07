@@ -25,4 +25,4 @@ Execution:
 This will trigger your browser to automatically open your dashboard. To use the interactivity, click to filter and hover for tooltips. All other views will update based on your selection.
 
 AI Disclosure:
-This project recieved assistance from Claude (Anthropic). Claude was used to debug the code and decide which d3 functions would best fit the visualizations chosen to represent the dataset. 
+This project recieved assistance from Claude (Anthropic) and ChatGPT (Open AI). They were used to debug the code and decide which d3 functions would best fit the visualizations chosen to represent the dataset. 
