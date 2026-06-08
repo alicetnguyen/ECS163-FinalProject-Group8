@@ -101,7 +101,7 @@ function draw_streamgraph(data, svgEl) {
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .attr("fill", "#9aa0b0")
-        .text("Credit score vs. Debt-to-Income Ratio, colored by purchase tier");
+        .text("Credit Score vs. Risk Level, colored by purchase tier");
 
     // Legend placed bottom-right inside the chart
     const legendWidth = 140;
@@ -122,7 +122,7 @@ function draw_streamgraph(data, svgEl) {
     categories.forEach(function (category, i) {
         const ly = i * 16;
         legend.append("rect")
-            .attr("x", 0)
+            .attr("x", -8)
             .attr("y", ly)
             .attr("width", 10)
             .attr("height", 10)
@@ -131,7 +131,7 @@ function draw_streamgraph(data, svgEl) {
             .attr("opacity", 0.85);
 
         legend.append("text")
-            .attr("x", 14)
+            .attr("x", 10)
             .attr("y", ly + 9)
             .attr("font-size", "11px")
             .attr("fill", "#5a6070")
@@ -301,7 +301,7 @@ function draw_streamgraph(data, svgEl) {
         .attr("x", width / 2)
         .attr("y", height + 32)
         .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
+        .attr("font-size", "13px")
         .attr("fill", "#9aa0b0")
         .text("Credit Score");
 }

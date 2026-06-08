@@ -13,7 +13,7 @@ function draw_sankey(dataset, svgEl) {
     svg.selectAll("*").remove();
 
     // Set up sankey dimensions — uses card size instead of fixed coords
-    const margin = { top: 38, right: 90, bottom: 30, left: 90 };
+    const margin = { top: 38, right: 40, bottom: 30, left: 40 };
 
     const sankeyWidth = W - margin.left - margin.right;
     const sankeyHeight = H - margin.top - margin.bottom;
@@ -243,7 +243,7 @@ function draw_sankey(dataset, svgEl) {
         .attr("y", sankeyHeight + 20)
         .attr("text-anchor", (d, i) => ["start", "middle", "end"][i])
         .attr("font-family", "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif")
-        .attr("font-size", "11px")
+        .attr("font-size", "13px")
         .attr("font-weight", "500")
         .attr("fill", "#9aa0b0")
         .text(d => d.label);

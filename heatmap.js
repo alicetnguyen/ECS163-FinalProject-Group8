@@ -258,7 +258,7 @@ function draw_heatmap(data, svgEl) {
         .attr("x", chart_width / 2)
         .attr("y", chart_height + 62)
         .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
+        .attr("font-size", "13px")
         .attr("fill", "#9aa0b0")
         .text("Product Category");
 
@@ -267,13 +267,13 @@ function draw_heatmap(data, svgEl) {
         .attr("x", -chart_height / 2)
         .attr("y", -46)
         .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
+        .attr("font-size", "13px")
         .attr("fill", "#9aa0b0")
         .text("Age Group");
 
     // Create color legend for heatmap
-    const legend_width = Math.min(130, chart_width * 0.35);
-    const legend_height = 8;
+    const legend_width = Math.min(120, chart_width * 0.25);
+    const legend_height = 6;
 
     const legend = g.append("g")
         .attr(
@@ -283,9 +283,9 @@ function draw_heatmap(data, svgEl) {
 
     // Legend title
     legend.append("text")
-        .attr("x", 0)
+        .attr("x", -14)
         .attr("y", -10)
-        .attr("font-size", "11px")
+        .attr("font-size", "10px")
         .attr("font-weight", 600)
         .attr("fill", "#5a6070")
         .text("Average Purchase ($)");
@@ -323,7 +323,7 @@ function draw_heatmap(data, svgEl) {
         .attr("y", legend_height + 13)
         .attr("font-size", "9px")
         .attr("fill", "#9aa0b0")
-        .text("$" + Math.round(minAvg));
+        .text("Low Risk");
 
     // show max value of avg purchase
     legend.append("text")
@@ -332,5 +332,6 @@ function draw_heatmap(data, svgEl) {
         .attr("text-anchor", "end")
         .attr("font-size", "9px")
         .attr("fill", "#9aa0b0")
-        .text("$" + Math.round(maxAvg));
+        .text("High Risk");
+
 }

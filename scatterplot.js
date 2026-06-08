@@ -154,7 +154,7 @@ function draw_scatterplot(data, svgEl) {
         .attr("x", chart_width / 2)
         .attr("y", chart_height + 36)
         .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
+        .attr("font-size", "13px")
         .attr("fill", "#9aa0b0")
         .text("Credit Score");
 
@@ -164,7 +164,7 @@ function draw_scatterplot(data, svgEl) {
         .attr("x", -chart_height / 2)
         .attr("y", -36)
         .attr("text-anchor", "middle")
-        .attr("font-size", "11px")
+        .attr("font-size", "13px")
         .attr("fill", "#9aa0b0")
         .text("Debt-to-Income Ratio");
 
@@ -181,9 +181,9 @@ function draw_scatterplot(data, svgEl) {
 
     // legend title
     legend.append("text")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("font-size", "11px")
+        .attr("x", -5)
+        .attr("y", 5)
+        .attr("font-size", "13px")
         .attr("font-weight", 600)
         .attr("fill", "#5a6070")
         .text("Purchase Tier");

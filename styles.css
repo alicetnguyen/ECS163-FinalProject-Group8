@@ -204,7 +204,7 @@ html, body { margin: 0; padding: 0; }
 #dashboard {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1.2fr;
-  grid-template-rows: 1.3fr 0.95fr;
+  grid-template-rows: 1.2fr 1.1fr;
   grid-template-areas:
     "stream heatmap sankey"
     "scatter scatter scatter";

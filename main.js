@@ -35,13 +35,11 @@ function hideTooltip() {
 
 function showWelcomePanel() {
     if (!welcomeOverlay || !welcomeClose) return;
-    const seenKey = 'bnplDashboardWelcomeShown';
-    if (window.localStorage && window.localStorage.getItem(seenKey)) return;
 
     welcomeOverlay.classList.remove('hidden');
+
     welcomeClose.addEventListener('click', function () {
         welcomeOverlay.classList.add('hidden');
-        if (window.localStorage) window.localStorage.setItem(seenKey, 'true');
     });
 }
 
